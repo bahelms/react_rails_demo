@@ -54,7 +54,9 @@
               for record in @state.records
                 # key is for proper re-rendering
                 React.createElement Record,
-                  key: record.id, record: record, handleDeleteRecord: @deleteRecord
+                  key: record.id, record: record,
+                  handleDeleteRecord: @deleteRecord
+                  handleEditRecord: @updateRecord
 
   # JSX syntax
   # render: ->
@@ -63,16 +65,28 @@
   #   </div>`
 
   addRecord: (record) ->
-    records = @state.records.slice()
-    records.push(record)
+    # Old update
+    # records = @state.records.slice()
+    # records.push(record)
+
+    records = React.addons.update(@state.records, {$push: [record]})
     # setState sets for that specific key in the object
     @setState records: records
 
   deleteRecord: (record) ->
-    records = @state.records.slice()
-    records.splice(records.indexOf(record), 1)
+    # Old update
+    # records = @state.records.slice()
+    # records.splice(records.indexOf(record), 1)
+
+    index = @state.records.indexOf(record)
+    records = React.addons.update(@state.records, {$splice: [[index, 1]]})
     # replaceState totally overrides entire state and replaces with the object
     @replaceState records: records
+
+  updateRecord: (oldRecord, newRecord) ->
+    index = @state.records.indexOf(oldRecord)
+    records = React.addons.update(@state.records, {$splice: [[index, 1, newRecord]]})
+    @setState records: records
 
   credits: ->
     credits = @state.records.filter((val) -> val.amount >= 0)

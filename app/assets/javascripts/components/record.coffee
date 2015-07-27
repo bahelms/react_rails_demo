@@ -1,5 +1,11 @@
 @Record = React.createClass
+  getInitialState: ->
+    edit: false
+
   render: ->
+    if @state.edit then @recordForm() else @recordRow()
+
+  recordRow: ->
     # nulls mean the method is not getting attributes {}
     React.DOM.tr null,
       React.DOM.td null, @props.record.date
@@ -7,9 +13,43 @@
       React.DOM.td null, amountFormat(@props.record.amount)
       React.DOM.td null,
         React.DOM.a
+          className: "btn btn-xs btn-default"
+          onClick: @handleToggle
+          "Edit"
+        React.DOM.a
           className: "btn btn-xs btn-danger"
           onClick: @handleDelete
           "Delete"
+
+  recordForm: ->
+    React.DOM.tr null,
+      React.DOM.td null,
+        React.DOM.input
+          className: 'form-control'
+          type: 'text'
+          defaultValue: @props.record.date
+          ref: 'date'
+      React.DOM.td null,
+        React.DOM.input
+          className: 'form-control'
+          type: 'text'
+          defaultValue: @props.record.title
+          ref: 'title'
+      React.DOM.td null,
+        React.DOM.input
+          className: 'form-control'
+          type: 'number'
+          defaultValue: @props.record.amount
+          ref: 'amount'
+      React.DOM.td null,
+        React.DOM.a
+          className: "btn btn-xs btn-default"
+          onClick: @handleEdit
+          'Update'
+        React.DOM.a
+          className: "btn btn-xs btn-danger"
+          onClick: @handleToggle
+          'Cancel'
 
   handleDelete: (e) ->
     e.preventDefault()
@@ -19,4 +59,24 @@
       dataType: "JSON"
       success: =>
         @props.handleDeleteRecord @props.record
+
+  handleEdit: (e) ->
+    e.preventDefault()
+    $.ajax
+      method: "PUT"
+      url: "/records/#{@props.record.id}"
+      dataType: "JSON"
+      data: record: @recordData()
+      success: (updatedRecord) =>
+        @setState edit: false
+        @props.handleEditRecord @props.record, updatedRecord
+
+  handleToggle: (e) ->
+    e.preventDefault()
+    @setState edit: !@state.edit
+
+  recordData: ->
+    title: React.findDOMNode(@refs.title).value
+    date: React.findDOMNode(@refs.date).value
+    amount: React.findDOMNode(@refs.amount).value
 
