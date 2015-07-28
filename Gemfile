@@ -1,7 +1,8 @@
 source 'https://rubygems.org'
 
-gem "bootstrap-sass"
 gem "react-rails", "~> 1.1.0"
+gem "sprockets-coffee-react", "~> 3.0.1"
+gem "bootstrap-sass"
 gem "awesome_print"
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
