@@ -47,14 +47,22 @@
             React.DOM.thead null,
               React.DOM.tr null,
                 React.DOM.th null, "Date"
-                React.DOM.th null, "Title"
+                React.DOM.th null,
+                  React.DOM.div null,
+                    "Title"
+                    React.DOM.button
+                      className: "btn btn-xs btn-default"
+                      id: "sort_button"
+                      onClick: @handleTitleSort
+                      "Sort"
                 React.DOM.th null, "Amount"
                 React.DOM.th null, "Actions"
             React.DOM.tbody null,
               for record in @state.records
                 # key is for proper re-rendering
                 React.createElement Record,
-                  key: record.id, record: record,
+                  key: record.id,
+                  record: record,
                   handleDeleteRecord: @deleteRecord
                   handleEditRecord: @updateRecord
 
@@ -87,6 +95,12 @@
     index = @state.records.indexOf(oldRecord)
     records = React.addons.update(@state.records, {$splice: [[index, 1, newRecord]]})
     @setState records: records
+
+  handleTitleSort: (e) ->
+    @state.records.sort (a, b) ->
+      if a.title < b.title then return -1 else return 1
+      return 0
+    @setState records: @state.records
 
   credits: ->
     credits = @state.records.filter((val) -> val.amount >= 0)
